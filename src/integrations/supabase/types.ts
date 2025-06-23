@@ -9,7 +9,68 @@ export type Json =
 export type Database = {
   public: {
     Tables: {
-      [_ in never]: never
+      playlists: {
+        Row: {
+          cover_image_url: string | null
+          created_at: string | null
+          id: string
+          name: string
+          updated_at: string | null
+        }
+        Insert: {
+          cover_image_url?: string | null
+          created_at?: string | null
+          id?: string
+          name: string
+          updated_at?: string | null
+        }
+        Update: {
+          cover_image_url?: string | null
+          created_at?: string | null
+          id?: string
+          name?: string
+          updated_at?: string | null
+        }
+        Relationships: []
+      }
+      songs: {
+        Row: {
+          artist: string
+          created_at: string | null
+          file_url: string
+          id: string
+          name: string
+          playlist_id: string | null
+          updated_at: string | null
+        }
+        Insert: {
+          artist: string
+          created_at?: string | null
+          file_url: string
+          id?: string
+          name: string
+          playlist_id?: string | null
+          updated_at?: string | null
+        }
+        Update: {
+          artist?: string
+          created_at?: string | null
+          file_url?: string
+          id?: string
+          name?: string
+          playlist_id?: string | null
+          updated_at?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "songs_playlist_id_fkey"
+            columns: ["playlist_id"]
+            isOneToOne: false
+            referencedRelation: "playlists"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
     }
     Views: {
       [_ in never]: never
