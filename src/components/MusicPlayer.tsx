@@ -1,6 +1,6 @@
 
 import React, { useState, useEffect } from 'react';
-import { Play, Pause, SkipBack, SkipForward, Volume2, Repeat } from 'lucide-react';
+import { Play, Pause, SkipBack, SkipForward, Volume2, Repeat, Shuffle } from 'lucide-react';
 import { useMusicPlayer } from '@/contexts/MusicContext';
 import { Slider } from '@/components/ui/slider';
 
@@ -10,24 +10,29 @@ const MusicPlayer = () => {
     isPlaying,
     volume,
     isLooping,
+    isShuffled,
     toggle,
     next,
     previous,
     setVolume,
     toggleLoop,
+    toggleShuffle,
     audioRef,
   } = useMusicPlayer();
 
   const [progress, setProgress] = useState(0);
   const [duration, setDuration] = useState(0);
+  const [isDragging, setIsDragging] = useState(false);
 
   useEffect(() => {
     const audio = audioRef.current;
     if (!audio) return;
 
     const updateProgress = () => {
-      setProgress(audio.currentTime);
-      setDuration(audio.duration || 0);
+      if (!isDragging) {
+        setProgress(audio.currentTime);
+        setDuration(audio.duration || 0);
+      }
     };
 
     audio.addEventListener('timeupdate', updateProgress);
@@ -37,7 +42,7 @@ const MusicPlayer = () => {
       audio.removeEventListener('timeupdate', updateProgress);
       audio.removeEventListener('loadedmetadata', updateProgress);
     };
-  }, [audioRef]);
+  }, [audioRef, isDragging]);
 
   if (!currentSong) return null;
 
@@ -50,9 +55,18 @@ const MusicPlayer = () => {
 
   const handleProgressChange = (value: number[]) => {
     if (audioRef.current) {
-      audioRef.current.currentTime = value[0];
-      setProgress(value[0]);
+      const newTime = value[0];
+      audioRef.current.currentTime = newTime;
+      setProgress(newTime);
     }
+  };
+
+  const handleProgressStart = () => {
+    setIsDragging(true);
+  };
+
+  const handleProgressEnd = () => {
+    setIsDragging(false);
   };
 
   const handleVolumeChange = (value: number[]) => {
@@ -69,7 +83,9 @@ const MusicPlayer = () => {
             max={duration}
             step={1}
             onValueChange={handleProgressChange}
-            className="w-full"
+            onPointerDown={handleProgressStart}
+            onPointerUp={handleProgressEnd}
+            className="w-full cursor-pointer"
           />
           <div className="flex justify-between text-xs text-gray-500 mt-1">
             <span>{formatTime(progress)}</span>
@@ -93,7 +109,16 @@ const MusicPlayer = () => {
           </div>
 
           {/* Control Buttons */}
-          <div className="flex items-center space-x-4">
+          <div className="flex items-center space-x-2">
+            <button
+              onClick={toggleShuffle}
+              className={`p-2 transition-colors ${
+                isShuffled ? 'text-indigo-600' : 'text-gray-600 hover:text-gray-900'
+              }`}
+            >
+              <Shuffle size={18} />
+            </button>
+            
             <button
               onClick={previous}
               className="p-2 text-gray-600 hover:text-gray-900 transition-colors"
@@ -114,10 +139,7 @@ const MusicPlayer = () => {
             >
               <SkipForward size={20} />
             </button>
-          </div>
 
-          {/* Volume and Loop */}
-          <div className="hidden md:flex items-center space-x-4 flex-1 justify-end">
             <button
               onClick={toggleLoop}
               className={`p-2 transition-colors ${
@@ -126,17 +148,18 @@ const MusicPlayer = () => {
             >
               <Repeat size={18} />
             </button>
-            
-            <div className="flex items-center space-x-2">
-              <Volume2 size={18} className="text-gray-600" />
-              <Slider
-                value={[volume * 100]}
-                max={100}
-                step={1}
-                onValueChange={handleVolumeChange}
-                className="w-20"
-              />
-            </div>
+          </div>
+
+          {/* Volume Control */}
+          <div className="hidden md:flex items-center space-x-2 flex-1 justify-end">
+            <Volume2 size={18} className="text-gray-600" />
+            <Slider
+              value={[volume * 100]}
+              max={100}
+              step={1}
+              onValueChange={handleVolumeChange}
+              className="w-20"
+            />
           </div>
         </div>
       </div>
