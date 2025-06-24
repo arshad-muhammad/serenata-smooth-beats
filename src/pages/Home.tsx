@@ -9,6 +9,7 @@ import LoadingSpinner from '@/components/LoadingSpinner';
 import SearchBar from '@/components/SearchBar';
 import SearchResults from '@/components/SearchResults';
 import RecentlyPlayed from '@/components/RecentlyPlayed';
+import HeroSection from '@/components/HeroSection';
 import { Playlist, Song } from '@/types/music';
 
 interface SearchResult {
@@ -48,22 +49,12 @@ const Home = () => {
     <div className="min-h-screen bg-gradient-to-br from-white via-indigo-50/30 to-purple-50/30">
       <Header />
       
-      <main className="pt-16 pb-32 md:pb-24">
-        {/* Hero Section with Search */}
+      {/* Hero Section */}
+      <HeroSection />
+      
+      <main className="pb-32 md:pb-24">
+        {/* Search Section */}
         <section className="container mx-auto px-4 sm:px-6 lg:px-8 py-16">
-          <div className="text-center max-w-4xl mx-auto mb-8">
-            <h1 className="text-4xl md:text-6xl font-bold text-gray-900 mb-6 animate-fade-in">
-              Welcome to{' '}
-              <span className="bg-gradient-to-r from-indigo-600 to-purple-600 bg-clip-text text-transparent">
-                Serenata
-              </span>
-            </h1>
-            <p className="text-xl text-gray-600 mb-8 animate-fade-in-delay">
-              Discover premium playlists with smooth, seamless music streaming
-            </p>
-          </div>
-
-          {/* Search Bar */}
           <div className="max-w-2xl mx-auto mb-8">
             <SearchBar onResults={handleSearchResults} onClear={handleClearSearch} />
           </div>
